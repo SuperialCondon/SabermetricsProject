@@ -1,5 +1,5 @@
 use lahman;
-/*
+
 drop table if exists careerBatting;
 CREATE TABLE careerBatting as (
 select b.playerID, sum(b.G) as G, sum(b.AB) as AB, sum(b.R) as R, sum(b.H) as H, sum(b.IBB) as IBB, (sum(b.h) - (sum(b.2B)+ sum(b.3B)+ sum(b.HR))) 
@@ -18,8 +18,7 @@ select ((.690 * (BB - IBB) + .722 * HBP + .888 * 1B + 1.1271 * 2B + 1.616 * 3B +
 ((1B + (2 * 2B) + (3 * 3B) + (4 * HR))/nullif(AB,0)) - (H / nullif(AB,0)) as ISO, (1B/nullif(H,0)) as speedRatio, playerID
 	from careerBatting
     );
-*/
-/*
+
 drop table if exists playerLongevity;
 CREATE TABLE playerLongevity as (
 select p.playerID, p.nameLast, p.nameFirst, s.ISO, s.BA, s.speedRatio, s.WOBA, s.SLG, (p.finalGame - p.debut) as yearsPlayed, p.finalGame, 
@@ -33,7 +32,6 @@ p.debut, b.G, b.AB, b.R, b.H, b.1B, b.2B, b.3B, b.HR, b.RBI, b.BB, b.SO, b.HBP
     order by p.debut
     )
 ;
-*/
 
 DROP TABLE IF EXISTS youngPlayerLongevity;
 CREATE TABLE youngPlayerLongevity as (
@@ -63,16 +61,150 @@ SELECT AVG(ISO), AVG(BA), AVG(speedRatio), AVG(WOBA), AVG(yearsPlayed)
 SELECT AVG(ISO) * 6.25 + AVG(BA) * 3.57 + AVG(speedRatio) * 1.49 + AVG(WOBA) * 2.9
 	from youngPlayerLongevity;
 
-/*SELECT ((AVG(ISO)) / (AVG(speedRatio)))
+SELECT ((AVG(ISO)) / (AVG(speedRatio)))
 	from longPlayerLongevity;
 SELECT ((AVG(ISO)) / (AVG(speedRatio)))
 	from mediumPlayerLongevity;
 SELECT ((AVG(ISO)) / (AVG(speedRatio)))
 	from youngPlayerLongevity;
-    
-*/
-SELECT * from playerLongevity where ISO <= .125 and speedRatio >= .70;
+
+drop table if EXISTS careerBattingSoFar;
+create table careerBattingSoFar as (
+select (b.yearID - p.debut) as playersSeason, (b.h - (b.2B+ b.3B+ b.HR)) as 1B , b.* from batting as b
+	join people as p
+    on b.playerID = p.playerID
+	WHERE b.AB > 445 AND b.yearID > 1950
+);
+
+drop table if exists careerBattingSaberMetricsSoFar;
+CREATE table careerBattingSaberMetricsSoFar as (
+select
+ playersSeason,playerID,
+((.690 * (BB - IBB) + .722 * HBP + .888 * 1B + 1.1271 * 2B + 1.616 * 3B + 2.101 * HR) / nullif((AB + (BB - IBB) + SF + HBP), 0))AS WOBA,
+((1B + (2 * 2B) + (3 * 3B) + (4 * HR))/nullif(AB,0)) as SLG, 
+(H / nullif(AB,0)) as BA, 
+((1B + (2 * 2B) + (3 * 3B) + (4 * HR))/nullif(AB,0)) - (H / nullif(AB,0)) as ISO, (1B/nullif(H,0)) as speedRatio 
+from careerBattingSoFar);
+
+drop table if exists bestWOBAInCarrer;
+CREATE table bestWOBAInCarrer as (
+SELECT a.*
+FROM careerBattingSaberMetricsSoFar a
+INNER JOIN (
+    SELECT playerID, MAX(WOBA) WOBA
+    FROM careerBattingSaberMetricsSoFar
+    GROUP BY playerID
+) b ON a.playerID = b.playerID AND a.WOBA = b.WOBA);
+
+drop table if exists bestSLGInCareer;
+CREATE table bestSLGInCareer as (
+SELECT a.*
+FROM careerBattingSaberMetricsSoFar a
+INNER JOIN (
+    SELECT playerID, MAX(SLG) SLG
+    FROM careerBattingSaberMetricsSoFar
+    GROUP BY playerID
+) b ON a.playerID = b.playerID AND a.SLG = b.SLG);
+
+drop table if exists bestBAInCareer;
+CREATE table bestBAInCareer as (
+SELECT a.*
+FROM careerBattingSaberMetricsSoFar a
+INNER JOIN (
+    SELECT playerID, MAX(BA) BA
+    FROM careerBattingSaberMetricsSoFar
+    GROUP BY playerID
+) b ON a.playerID = b.playerID AND a.BA = b.BA);
+
+drop table if exists bestISOInCareer;
+CREATE table bestISOInCareer as (
+SELECT a.*
+FROM careerBattingSaberMetricsSoFar a
+INNER JOIN (
+    SELECT playerID, MAX(ISO) ISO
+    FROM careerBattingSaberMetricsSoFar
+    GROUP BY playerID
+) b ON a.playerID = b.playerID AND a.ISO = b.ISO);
+
+drop table if exists bestspeedRatioInCareer;
+CREATE table bestspeedRatioInCareer as (
+SELECT a.*
+FROM careerBattingSaberMetricsSoFar a
+INNER JOIN (
+    SELECT playerID, MAX(speedRatio) speedRatio
+    FROM careerBattingSaberMetricsSoFar
+    GROUP BY playerID
+) b ON a.playerID = b.playerID AND a.speedRatio = b.speedRatio);
+
+select * from bestWOBAInCarrer;
+select * from bestSLGInCareer;
+select * from bestBAInCareer;
+select * from bestISOInCareer;
+select * from bestspeedRatioInCareer;
+select * from playerLongevity;
+
+drop table if exists careerBattingSaberMetricsSoFarLongCareer;
+create table careerBattingSaberMetricsSoFarLongCareer as (
+	SELECT b.* from careerBattingSaberMetricsSoFar as b
+    join longPlayerLongevity as l
+    on b.playerID = l.playerID
+    );
 
 
+drop table if exists bestWOBAInLongCareer;
+CREATE table bestWOBAInLongCareer as (
+SELECT a.*
+FROM careerBattingSaberMetricsSoFarLongCareer a
+INNER JOIN (
+    SELECT playerID, MAX(WOBA) WOBA
+    FROM careerBattingSaberMetricsSoFarLongCareer
+    GROUP BY playerID
+) b ON a.playerID = b.playerID AND a.WOBA = b.WOBA);
 
 
+drop table if exists bestSLGInLongCareer;
+CREATE table bestSLGInLongCareer as (
+SELECT a.*
+FROM careerBattingSaberMetricsSoFarLongCareer a
+INNER JOIN (
+    SELECT playerID, MAX(SLG) SLG
+    FROM careerBattingSaberMetricsSoFarLongCareer
+    GROUP BY playerID
+) b ON a.playerID = b.playerID AND a.SLG = b.SLG);
+
+drop table if exists bestISOInLongCareer;
+CREATE table bestISOInLongCareer as (
+SELECT a.*
+FROM careerBattingSaberMetricsSoFarLongCareer a
+INNER JOIN (
+    SELECT playerID, MAX(ISO) ISO
+    FROM careerBattingSaberMetricsSoFarLongCareer
+    GROUP BY playerID
+) b ON a.playerID = b.playerID AND a.ISO = b.ISO);
+
+drop table if exists bestspeedRatioInLongCareer;
+CREATE table bestspeedRatioInLongCareer as (
+SELECT a.*
+FROM careerBattingSaberMetricsSoFarLongCareer a
+INNER JOIN (
+    SELECT playerID, MAX(speedRatio) speedRatio
+    FROM careerBattingSaberMetricsSoFarLongCareer
+    GROUP BY playerID
+) b ON a.playerID = b.playerID AND a.speedRatio = b.speedRatio);
+
+drop table if exists bestBAInLongCareer;
+CREATE table bestBAInLongCareer as (
+SELECT a.*
+FROM careerBattingSaberMetricsSoFarLongCareer a
+INNER JOIN (
+    SELECT playerID, MAX(BA) BA
+    FROM careerBattingSaberMetricsSoFarLongCareer
+    GROUP BY playerID
+) b ON a.playerID = b.playerID AND a.BA = b.BA);
+
+
+select * from bestWOBAInLongCareer;
+select * from bestSLGInLongCareer;
+select * from bestISOInLongCareer;
+select * from bestspeedRatioInLongCareer;
+select * from bestBAInLongCareer;
