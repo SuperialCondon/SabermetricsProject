@@ -1,5 +1,11 @@
 Link to video: https://youtu.be/l2LP_xkukxs
 
+To run: 
+Clone the repo
+Open the FinalProject.ipynb in jupityr notebooks. (This uses the R Kernel btw!)
+You can run the algorithm at the bottom by running the cell, if you get a "playerLongevity not found" error run the first code cell at the top then 
+	try again.
+
 My original idea for a stat was to try and predict consistancy within a player. After
 much consideration I realized that this would probably be too difficult. Instead I 
 decided to look further into the old-player young-player skills and see exactly how
