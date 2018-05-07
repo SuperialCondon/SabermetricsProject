@@ -5,28 +5,28 @@ the numbers came out because I thought that it was an interesting speculation af
 the lecture that we discussed it. My end goal was to be able to enter in some stats
 and have a number come out that would loosely represent how long a player is expected to 
 play if he kept his current stats throughout his career. I used the lahman database from
-1950-2017 and modified the tables to contain wOBA, SLG, BA, and ISO. I then split the players 
-into 3 seperate groups. Longcareer players, medium career players, and short career players. 
+1950-2017 and modified the tables to contain wOBA, SLG, BA, and ISO. I then split the players into 3 seperate groups. Long career players, medium career players, and short career players. 
 I defined a short career as 6 years or less, a medium career to be 6-12 years, and a long 
 career to be more than 12. After gathering these 3 groups I eliminated players who could 
-not hold an average of 445AB per season. This removed a larged amount of players with perfect 
+not hold an average of 445 AB per season. This removed a large amount of players with perfect 
 wOBAs, or BA or andother funky stats. I tried to find some statcast data for player speeds, but it 
 was not immediatley obvious to me how to integrate that into the lahman database, and the other 
 problem was that a career average speed to first base would be ignoring many factors. 
-Instead I made up a stat called speedRatio that is the percent of Hits that lead to singles.
+Instead, I made up a stat called speedRatio that is the percent of Hits that lead to singles.
 The logic behind this was that a power hitter would have a lower speedRatio than a weak hitter
 who can run very fast. I then grabbed the average BA, ISO, speedRatio, SLG, and wOBA of the young
-group, medium group, and long group. When it was all said and done the stats came out like 
+who can run very fast because a power hitter would have more home runs or distance hits. 
+I then grabbed the average BA, ISO, speedRatio, and wOBA of the short group, medium group, and long group. When it was all said and done the stats came out like 
 this:
 
 Young 
-ISO: .125 BA: .260 SPEEDRATIO: .708 WOBA: .305 AVEYEARSPLAYED: 3.8
+ISO: .125 BA: .260 SPEEDRATIO: .708 WOBA: .305 AVGYEARSPLAYED: 3.8
 
 Medium
-ISO: .134 BA: .271 SPEEDRATIO: .706 WOBA: .318 AVEYEARSPLAYED: 9.4
+ISO: .134 BA: .271 SPEEDRATIO: .706 WOBA: .318 AVGYEARSPLAYED: 9.4
 
 Old
-ISO: .166 BA: .280 SPEEDRATIO: .673 WOBA: .339 AVEYEARSPLAYED: 15.8
+ISO: .166 BA: .280 SPEEDRATIO: .673 WOBA: .339 AVGYEARSPLAYED: 15.8
 
 So it does appear that ISO is higher among players who have had long careers, and speedRatio
 is lower amoung players who have had a long career. However, no matter what I try to do 
