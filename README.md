@@ -1,3 +1,5 @@
+Link to video: https://youtu.be/l2LP_xkukxs
+
 My original idea for a stat was to try and predict consistancy within a player. After
 much consideration I realized that this would probably be too difficult. Instead I 
 decided to look further into the old-player young-player skills and see exactly how
@@ -66,4 +68,8 @@ telling evidence about how long a player can play in the MLB. It may also be tha
 many outside factors that the stats will never come out cleanly.   
 
 REPO:
-The other file contained here is my queries for modifying the lahman data.
+The other files contained here:
+FinalProject.ipynb: the actual notebook
+All CSVS: tables that are results of the sql queries
+FinalProjectDatabaseCreation.sql: the sql query script
+
